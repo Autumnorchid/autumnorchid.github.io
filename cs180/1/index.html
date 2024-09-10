@@ -6,8 +6,15 @@
         <h2> Sergei Mikhailovich Prokudin-Gorskii's pictures </h2>
         <p> Prokudin-Gorskii has produced pictures through BGR filters (in order). This project tries to build colorful images which Prokudin-Gorskii did not have the chance to print. </p>
     </section>
+    
+    <a href="#Overview">Part 1: Exhaustive search</a> <br>
+
+    <a href="#Pyramid">Part 2: Pyramid search</a> <br>
+
+    <a href="#emir">Part 3 (Bells and Whistles) cv.sobel on Emir</a>
+
     <section id="Overview">
-        <h2> Exhaustive search </h2>
+        <h2> Part 1: Exhaustive search </h2>
         <p> I first approach each of the image by trying out all displacements from x and y coordinates with the range of [-15, 15], with metrics of l2 norm and normalized cross correlation(ncc). However, the borders often interfere with the metrics so I decide to crop the 7.5% from each side. The results are good in ncc metric.</p>
         <img src="media/out/cathedral.jpg" alt="exhaustive search" >
         <figcaption> Cathedral. Displacement: G: [5, 2]
@@ -23,52 +30,52 @@
     </section>
 
     <section id="Pyramid">
-        <h2> Pyramid search </h2>
+        <h2> Part 2: Pyramid search </h2>
         <p> Pictures above were all in jpg form so the runtimes for aligning were low. However, we have some very big files in tif forms so we need to implement a faster algorithms: pyramid. The pyramid method, in its nature, is also doing searching. Instead of performing exhaustive search, it begins searching from a blurry picture to reduce the amount of pixels processed. When the first level of blurry images are aligned(using the regular alignment function), we get to the second level with finer images and the displacements we received from the first level. This is a recursive algorithm and is ~4 times faster than exhaustive search. </p>
-        <img src="media/out/church.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/church.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Church. Displacement: G: [25  4]
             Displacement: R: [58 -4] </figcaption>
 
-        <img src="media/out/emir.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/emir.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Emir. Displacement: G: [49 24]
             Displacement: R: [ 104 -154]  (This one is bad and we will come back to this)</figcaption>
 
-        <img src="media/out/harvesters.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/harvesters.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> harvesters. Displacement: G: [60 17]
             Displacement: R: [124  14] </figcaption>
     
-        <img src="media/out/icon.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/icon.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Icon. Displacement: G: [40 17]
             Displacement: R: [90 23]  </figcaption>
 
-        <img src="media/out/lady.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/lady.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Lady. Displacement: G: [48  9]
             Displacement: R: [112  12] </figcaption>
 
 
 
-        <img src="media/out/melons.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/melons.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Melons. Displacement: G: [82 10]
         Displacement: R: [179  14] </figcaption>
 
-        <img src="media/out/onion_church.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/onion_church.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Onion church. Displacement: G: [51 26]
             Displacement: R: [108  36] </figcaption>
 
 
-        <img src="media/out/sculpture.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/sculpture.jpg" alt="pyramid search" width=500, height=500>
 
         <figcaption> Sculpture. Displacement: G: [ 33 -11]
             Displacement: R: [140 -27] </figcaption>
 
-        <img src="media/out/self_portrait.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/self_portrait.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Self portrait. Displacement: G: [80 29]
                 Displacement: R: [176  36] </figcaption>
-        <img src="media/out/three_generations.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/three_generations.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Three generations. Displacement: G: [54 14]
             Displacement: R: [112  11] </figcaption>
 
-        <img src="media/out/train.jpg" alt="pyramid search" width=600, height=600>
+        <img src="media/out/train.jpg" alt="pyramid search" width=500, height=500>
         <figcaption> Train. Displacement: Displacement: G: [42  6]
             Displacement: R: [87 32] </figcaption>
 
@@ -77,17 +84,17 @@
     </section>
 
     <section id="emir">
-        <h2> Emir </h2>
-        <p> Emir is a special case. The pyramid search did not work well on this image. That's because The Emir's blue jacket captures a lof of light in the blue channel but not so much in the green and red channels What work previously does not work now. My approach is to us Sobel operator on the original raw image first and then try to use pyramid method to align the Sobel'ed image.  </p>
-        <img src="media/out/emir.jpg" alt="emir" width=600, height=600>
+        <h2> Part 3: Emir </h2>
+        <p> Emir is a special case. The pyramid search did not work well on this image. That's because The Emir's blue jacket captures a lof of light in the blue channel but not so much in the green and red channels What work previously does not work now. My approach is to use Sobel operator on the original raw image first and then try to use pyramid method to align the Sobel'ed image.  </p>
+        <img src="media/out/emir.jpg" alt="emir" width=500, height=500>
         <figcaption> Pyramid-aligned Emir. Displacement: G: [49 24] Displacement: R: [ 104 -154]  </figcaption>
         
         <p> After I apply cv.sobel to emir image and align the sobel images, I get this </p>
-        <img src="media/out/emir_sobel_aligned.jpg" alt="emir_sobel" width=600, height=600>
+        <img src="media/out/emir_sobel_aligned.jpg" alt="emir_sobel" width=500, height=500>
 
         <p> With the offsets from the sobel images, I can now apply the offsets to the original image. </p>
 
-        <img src="media/out/emir_sobel_aligned_final.jpg" alt="emir_aligned" width=600, height=600>
+        <img src="media/out/emir_sobel_aligned_final.jpg" alt="emir_aligned" width=500, height=500>
 
         <figcaption> Sobel-aligned Emir. Displacement: G: [49 23] Displacement: R: [107  40] </figcaption>
 
