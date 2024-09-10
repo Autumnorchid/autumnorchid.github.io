@@ -80,6 +80,17 @@
         <h2> Emir </h2>
         <p> Emir is a special case. The pyramid search did not work well on this image. That's because The Emir's blue jacket captures a lof of light in the blue channel but not so much in the green and red channels What work previously does not work now. My approach is to us Sobel operator on the original raw image first and then try to use pyramid method to align the Sobel'ed image.  </p>
         <img src="media/out/emir.jpg" alt="emir" width=600, height=600>
+        <figcaption> Pyramid-aligned Emir. Displacement: G: [49 24] Displacement: R: [ 104 -154]  </figcaption>
+        
+        <p> After I apply cv.sobel to emir image and align the sobel images, I get this </p>
+        <img src="media/out/emir_sobel_aligned.jpg" alt="emir_sobel" width=600, height=600>
+
+        <p> With the offsets from the sobel images, I can now apply the offsets to the original image. </p>
+
+        <img src="media/out/emir_sobel_aligned_final.jpg" alt="emir_aligned" width=600, height=600>
+
+        <figcaption> Sobel-aligned Emir. Displacement: G: [49 23] Displacement: R: [107  40] </figcaption>
+
     </section>
 
 
