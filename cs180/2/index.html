@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, section, footer {
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+        }
+        section {
+            border-bottom: 1px solid #ddd;
+        }
+        footer {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Project 2</h1>
+    </header>
+    <section id="section1">
+        <h2>Part 1.1: Finite Difference Operator</h2>
+        <p> I convolve the cameraman image with D_x = [1, -1] and D_y = [1, -1].T using scipy.signal.convolve2 with mode='same', boundary='symm' to get the partial derivatives. With the partial derivatives computed, I calculate the gradient magnitude by np.sqrt(partial_x**2 + partial_y**2). At the end, I use a threshold of 0.27 to binarize the graident magnitude image. </p>
+        <img src="media/1-1/cameraman.png" alt="cameraman" width=400, height=400>
+        <figcaption>cameraman</figcaption>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/1-1/cameraman_partial_x.jpg" alt="cameraman_dx" width="400" height="400">
+            <figcaption>cameraman_dx</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_partial_y.jpg" alt="cameraman_dy" width="400" height="400">
+            <figcaption>cameraman_dy</figcaption>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media\1-1\cameraman_gradient_magnitude.jpg" alt="cameraman_gradient_magnitude" width="400" height="400">
+            <figcaption>cameraman_gradient_magnitude</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_edge_image.jpg" alt="edge_image" width="400" height="400">
+            <figcaption>cameraman_binarized</figcaption>
+            </div>
+        </div>
+
+
+
+
+        
+
+    </section>
+    <section id="section2">
+        <h2>Part 1.2: Derivative of Gaussian (DoG) Filter</h2>
+        <p>Now, I try to use Gaussian filter G to blur the image first (by convolving the image with a Gaussian) and then repeat what I have done in part 1 to compute the gradient magnitude and binarize the graident maginitude. There is less noise.</p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/1-1/cameraman_blur_partial_x.jpg" alt="cameraman_dx" width="400" height="400">
+            <figcaption>blur_cameraman_dx</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_blur_partial_y.jpg" alt="cameraman_dy" width="400" height="400">
+            <figcaption>blur_cameraman_dy</figcaption>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media\1-1\cameraman_blur_gradient_magnitude.jpg" alt="cameraman_gradient_magnitude" width="400" height="400">
+            <figcaption>blur_cameraman_gradient_magnitude</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_blur_edge_image.jpg" alt="edge_image" width="400" height="400">
+            <figcaption>blur_cameraman_binarized</figcaption>
+            </div>
+        </div>
+        <p>
+            I used a Gaussian filter first to blure the image and then compute the partial derivatives and gradient magnitude. Now I convolve the finite difference operator D_x and D_y first with the Gaussian filter and then compute the gradient magnitude. The results are identical.
+        </p>
+
+        <!-- display DoG filters -->
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/1-1/DoG_filter_x.png" alt="cameraman_dx" width="400" height="400">
+            <figcaption>DoG_filter_x</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/DoG_filter_y.png" alt="cameraman_dy" width="400" height="400">
+            <figcaption>DoG_filter_y</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/1-1/cameraman_DoG_partial_x.jpg" alt="cameraman_dx" width="400" height="400">
+            <figcaption>DoG_cameraman_dx</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_DoG_partial_y.jpg" alt="cameraman_dy" width="400" height="400">
+            <figcaption>DoG_cameraman_dy</figcaption>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media\1-1\cameraman_DoG_gradient_magnitude.jpg" alt="cameraman_gradient_magnitude" width="400" height="400">
+            <figcaption>DoG_cameraman_gradient_magnitude</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/1-1/cameraman_DoG_edge_image.jpg" alt="edge_image" width="400" height="400">
+            <figcaption>DoG_cameraman_binarized</figcaption>
+            </div>
+        </div>
+    </section>
+    <section id="section3">
+        <h2>Part 2.1: Image "Sharpening"</h2>
+        <p> 
+            To sharpen an image, I first convolve the image with a Gaussian to blur the image which gives a low frequency image. Then, I subtract the low frequency image from the original image to get a high frequency image. Finally, I add the high frequency image (by a factor of alpha) to the original image to get the sharpened image.
+        </p>
+        <p>
+            The first example is Taj Mahal. The original image is on the left and the sharpened image is on the right. The alpha value is 3.
+        </p>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/2-1/taj.jpg" alt="taj_mahal" width="400" height="400">
+            <figcaption>Original Taj Mahal</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/2-1/taj_sharpened.jpg" alt="taj_mahal_sharpened" width="400" height="400">
+            <figcaption>Sharpened Taj Mahal</figcaption>
+            </div>
+        </div>
+        <p>
+            The second example is a porcelain piece. The original image is on the left and the sharpened image is on the right. The alpha value is 3.
+        </p>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/2-1/porcelain.jpg" alt="shuri" width="400" height="500">
+            <figcaption>Original porcelain</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/2-1/porcelain_sharpened.jpg" alt="shuri_sharpened" width="400" height="500">
+            <figcaption>Sharpened porcelain</figcaption>
+            </div>
+
+        </div>
+
+        <p>
+            The third example demonstrated are the original image of a swallow, the blurred image, and the sharpened image from the blurred image. The alpha value is 3. We can see that the sharpened image looks identical to the original image but not as smooth as the original one. The edges look more artificial.
+        </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/2-1/swallow.jpg" alt="swallow" width="400" height="400">
+            <figcaption>Original swallow</figcaption>
+            </div>
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/2-1/swallow_blur.jpg" alt="swallow_sharpened" width="400" height="400">
+            <figcaption>blurred swallow</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/2-1/swallow_sharpen.jpg" alt="swallow_sharpened" width="400" height="400">
+            <figcaption>Sharpened swallow</figcaption>
+            </div>
+        </div>
+
+
+
+    </section>
+    <section id="section4">
+        <h2>Part 2.2: Hybrid Images</h2>
+        <p>Here I am going to make a hybrid image from two images by combining the low frequency part of an image (obtained by passing through a Guassian filter) and the high frequency part of another. </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/DerekPicture.jpg" alt="manim2" width="450" height="640">
+            <figcaption>man</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/nutmeg.jpg" alt="catim1" width="500" height="400">
+            <figcaption>cat</figcaption>
+            </div>
+        </div>
+
+        <img src="media/hybrid.jpg" alt="hybrid" width="400" height="640">
+        <figcaption>hybrid</figcaption>
+
+        <p>
+            A quick frequency analysis of the hybrid image of cat in low frequency and msn in high frequency.
+        </p>
+        <div>
+            <img src="media/freq1.png" alt="hybrid_spectrum" width="640" height="640">
+        </div>
+        
+        <div><img src="media/freq2.png" alt="hybrid_spectrum" width="400" height="400"></div>
+        
+
+        <p> 
+            The first image is a hybrid peach and cat, kind of a failure
+        </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/peach.jpg" alt="peach" width="400" height="400">
+            <figcaption>peach in low frequency </figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/cat.jpg" alt="cat" width="400" height="400">
+            <figcaption>cat in high frequency </figcaption>
+            </div>
+        </div>
+
+        <img src="media/hybrid_peach_cat.png" alt="hybrid2" width="400" height="400">
+
+
+        <p> 
+            The second image is a hybrid hotpot and noodle, kind of a success I think
+        </p>
+        
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/hotpot.jpg" alt="hotpot" width="400" height="400">
+            <figcaption>hotpot in low frequency </figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/noodle.jpg" alt="noodle" width="400" height="400">
+            <figcaption>noodle in high frequency </figcaption>
+            </div>
+        </div>
+
+        <img src="media/hybrid_hotpot_noodle1.png" alt="hybrid3" width="400" height="400">
+
+
+    </section>
+    <section id="section5">
+        <h2>Part 2.3: Gaussian and Laplacian Stacks</h2>
+        <p>
+            In this section, I will build a Gaussian stack and a Laplacian stack for an image. The Gaussian stack is built by applying a Gaussian filter to the image multiple times. The Laplacian stack is built by subtracting the Gaussian stack from the original image. The Laplacian stack is used to reconstruct the original image.
+        </p>
+    <div>
+        <img src = "media/oraple_stacks.png" alt="oraple_stacks" width="800" height="800">
+        <figcaption>Gaussian, and Laplacian stacks of apples and oranges</figcaption>
+    </div>  
+    <p>
+        Here we apply a mask stacks (a Gaussian stack of masks)
+    </p>
+    <div>
+        <img src = "media/oraple_mask.png" alt="oraple_stacks_mask" width="300" height="300">
+        <figcaption>Mask</figcaption>
+    </div>
+
+    <div>
+        <img src = "media/oraple_stacks_masked.png" alt="oraple_stacks_masked" width="800" height="500">
+        <figcaption>Masked Laplacian stacks of apples and oranges</figcaption>
+    </div>
+    </section>
+    <section id="section6">
+        <h2>Part 2.4: Multiresolution Blending (a.k.a. the oraple!)</h2>
+        <p>
+            With the Laplacian stacks of both images and the mask image stack built, we can now blend two images together by blending each stage of the stacks and then reconstruct the final image by summing them up. Then we have an oraple!
+        </p>
+        <div>
+            <img src = "media/oraple.png" alt="oraple" width="300" height="300">
+            <figcaption>Oraple</figcaption>
+        </div>
+
+        <p>
+            Here is a blended image of lacroix grapefruit and lacroix lime
+        </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/lacroix_grapefruit.jpg" alt="lacroix_grapefruit" width="300" height="400">
+            <figcaption>lacroix_grapefruit</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/lacroix_lime.jpg" alt="lacroix_lime" width="400" height="400">
+            <figcaption>lacroix_lime</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/grape_lime.png" alt="lacroix_grapefruit" width="300" height="400">
+            <figcaption>lacroix_grapefruit_lime</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/oraple_mask.png" alt="lacroix_lime" width="400" height="400">
+            <figcaption>mask</figcaption>
+            </div>
+        </div>
+
+        <p>
+            Here is a blended image of sun and moon
+        </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/sun.jpg" alt="sun" width="400" height="400">
+            <figcaption>sun</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/moon.jpg" alt="moon" width="400" height="400">
+            <figcaption>moon</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/sunmoon.png" alt="sun" width="400" height="400">
+            <figcaption>sun_moon</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/oraple_mask.png" alt="moon" width="400" height="400">
+            <figcaption>mask</figcaption>
+            </div>
+        </div>
+
+        <p>
+            Here is a blended image of a toy and a potato mine from Plant vs. Zombies. The mask is irregular. 
+        </p>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/star.jpg" alt="toy" width="400" height="400">
+            <figcaption>toy</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/tudou.jpg" alt="potato_mine" width="400" height="400">
+            <figcaption>potato_mine</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; margin-right: 20px;">
+            <img src="media/patato_toy.png" alt="toy" width="400" height="400">
+            <figcaption>toy_potato_mine</figcaption>
+            </div>
+            <div style="text-align: center;">
+            <img src="media/patato_mask.png" alt="potato_mine" width="400" height="400">
+            <figcaption>mask</figcaption>
+            </div>
+        </div>
+
+
+    </section>
+    <footer>
+        <p>&copy; September 2024</p>
+    </footer>
+</body>
+</html>
