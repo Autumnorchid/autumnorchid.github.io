@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #111111;
+            color: white;
+        }
+        section {
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+        }
+        p {
+            text-align: left; /* Align text to the left */
+        }
+        img {
+            text-align: center;
+            
+        }
+        footer {
+            background-color: #f1f1f1;
+        }
+
+    </style>
+</head>
+    <header>
+        <h1>CS 180 Project 3</h1>
+        <h3>David Li</h3>
+    </header>
+    <section>
+        <h2>Part 1 Defining Correspondences</h2>
+        <p>To morph one face to another, I need to label the corresponding points on both faces with the same order. I use a tool developed by another student in the previous semester to label them and obtain a correspondences json file.</p>
+        <p>With the correspondences, I take the mean of points and get the Delaunay Triangulation of the mean of points by using scipy.spatial.Delaunay. </p>
+        <p>Here are portrait pictures of President Bush and President Obama.</p>
+        <img src="media/bush.jpg" alt="President Bush" width="564" height="768">
+        <img src="media/obama.jpg" alt="President Obama" width="564" height="768">
+        <p>Here are the Delaunay Triangulation of the mean of points from plotted on both pictures </p>
+        <img src="media/bush_tri.png" alt="President Bush Triangulation" width="564" height="768">
+        <img src="media/obama_tri.png" alt="President Obama Triangulation" width="564" height="768">
+
+
+    </section>
+    <section>
+        <h2>Part 2: Computing the "Mid-Way Face"</h2>
+        <p>Now with the Delaunay Triangulation of the mean face, I can take the following three steps to comput the mid-way face:</p>
+        <ul> 
+            <li>computing the average shape (a.k.a the average of each keypoint location in the two faces), which I have done in part 1</li>
+            <li>warping both faces into that shape</li>
+            <li>averaging the colors together</li>
+        </ul>
+        <p>In this section, I focus on warping both faces into the shape and averaging the colors. To warp two faces, I need to first warp each triangle from a triangle in the source image to its corresponding triangle in another image using affine transformation. </p>
+        <p>Here is a pseudocode of how I warp triangles</p>
+        <pre>
+            for each triangle in the Delaunay Triangulation:
+                compute the affine transformation matrix
+                create mask for the destination triangle
+                transform the coordinates from the destination triangle to the source triangle
+                warp the pixels from source image to destination image
+                return the warped image limited to the triangle's region
+        </pre>
+        <p>After warping triangles from both images, I cross-dissolve (blend) them into one final image. The result shows the morphing between President Bush and President Obama</p>
+        <img src="media/bush.jpg" alt="Bush" width="451" height="614">
+        <img src="media/bush_obama.jpg" alt="Midway Face" width="451" height="614">
+        <img src="media/obama.jpg" alt="Obama" width="451" height="614">
+
+    </section>
+
+    <section>
+        <h2>Part 3: The Morph Sequence</h2>
+        <p>Now I have the mid-way face, I can create a morph sequence by morphing the two faces gradually </p>
+        </pre>
+        <p>Here is the morph sequence between President Bush and President Obama in 30 intermediate steps</p>
+        <img src="media/bush_obama_morph_30.gif" alt="Morph Sequence" width="451" height="614">
+    </section>
+
+    <section>
+        <h2>Part 4: The "Mean Face" of a Population</h2>
+        <p>I use the techniques of morphing through warping triangles to find the "mean face" of a population. I will work on the Danes dataset with 37 images already labeled. The original labels do not contain the corner points. I add them in for better quality.</p>
+        <img src="media/danes_label_points.png" alt="Mean Face" width="451" height="451">
+        <figcaption>The labeled points of the Danes dataset of image 1</figcaption>
+        <img src="media/01-1m.bmp" alt="Mean Face" width="700" height="500">
+        <figcaption>Image 1 of the Danes dataset</figcaption>
+
+        <p>First, I compute the average face shape of the whole population. Then, I morph each face to the average shape.</p>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/01-1m.bmp" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 1</figcaption>
+            </div>
+            <div>
+            <img src="media/01-1m_morphed.jpg" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 1 morphed to the average shape</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/09-1m.bmp" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 9</figcaption>
+            </div>
+            <div>
+            <img src="media/09-1m_morphed.jpg" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 9 morphed to the average shape</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/17-1m.bmp" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 17</figcaption>
+            </div>
+            <div>
+            <img src="media/17-1m_morphed.jpg" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 17 morphed to the average shape</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/22-1f.bmp" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 22</figcaption>
+            </div>
+            <div>
+            <img src="media/22-1f_morphed.jpg" alt="Mean Face" width="490" height="350">
+            <figcaption>Image 22 morphed to the average shape</figcaption>
+            </div>
+        </div>
+
+        <p>Finally, I morph all the morphed images together to obtain the mean face of the population</p>
+
+        <img src="media/all_morphed1.jpg" alt="Mean Face" width="490" height="350">
+
+        <p>I warp my face into the mean shape and then the average face into my face's shape</p>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/me.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>Me in Evans</figcaption>
+            </div>
+            <div>
+            <img src="media/me_in_avg_shape.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>Me in the average shape</figcaption>
+            </div>
+            <div>
+            <img src="media/avg_shape_in_me.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>Average face in my shape</figcaption>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h2>Part 5. Caricatures: Extrapolating from the mean</h2>
+        <p>Now I will create caricatures by extrapolating from the mean face. I follow the formula of new = myshape + alpha*(myshape-averageshape). Here are some caricatures with varying alphas</p>
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/me_in_avg_shape_caricature-10.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>alpha = -1</figcaption>
+            </div>
+            <div>
+            <img src="media/me_in_avg_shape_caricature-05.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>alpha = -0.5</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/me_in_avg_shape_caricature05.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>alpha = 0.5</figcaption>
+            </div>
+            <div>
+            <img src="media/me_in_avg_shape_caricature10.jpg" alt="Mean Face" width="420" height="300">
+            <figcaption>alpha = 1</figcaption>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>
+            Part 6: Bells and Whistles: Change gender
+        </h2>
+        <p>I will change my gender by morphing my face to the average Chinese woman face.</p>
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/me2.jpg" alt="Mean Face" width="300" height="450">
+            <figcaption>Me</figcaption>
+            </div>
+            <div>
+            <img src="media/chineseaveragewoman.jpg" alt="Mean Face" width="300" height="450">
+            <figcaption>Average Chinese woman</figcaption>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around;">
+            <div>
+            <img src="media/me_to_woman_shape.jpg" alt="Mean Face" width="300" height="450">
+            <figcaption>Morph shape</figcaption>
+            </div>
+            <div>
+            <img src="media/me_to_woman_apperance.jpg" alt="Mean Face" width="300" height="450">
+            <figcaption>Morph appearance</figcaption>
+            </div>
+            <div>
+                <img src="media/me_to_woman.jpg" alt="Mean Face" width="300" height="450">
+                <figcaption>Combine them</figcaption>
+                </div>
+        </div>
+
+
+    </section>
+</html>
