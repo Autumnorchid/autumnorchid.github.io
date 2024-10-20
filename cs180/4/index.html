@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #111111;
+            color: white;
+        }
+        section {
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+        }
+        p {
+            text-align: left;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        img {
+            text-align: center;
+        }
+        footer {
+            background-color: #f1f1f1;
+        }
+        /* Style for math equations */
+        .math {
+            text-align: center;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        /* Add some padding around code/math blocks */
+        .math-block {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        /* Style for inline math */
+        .inline-math {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    .image-row {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px; /* Adjust the space between figures */
+    }
+
+    figure {
+        display: inline-block;
+        text-align: center;
+        width: 451px; /* Ensure all figures have the same width */
+    }
+
+    figcaption {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #555;
+    }
+    </style>
+    <!-- Add MathJax to render LaTeX math -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>CS 180 Project 4</h1>
+        <h3>David Li</h3>
+    </header>
+
+    <section>
+        <h2>Shoot and digitize pictures</h2>
+        <p>To morph one face to another, I need to label the corresponding points on both faces with the same order. I use a tool developed by another student in the previous semester to label them and obtain a correspondences JSON file.</p>
+    </section>
+
+    <section>
+        <h2>Recover Homographies</h2>
+        <p>Recovering homography is a math problem. We need to solve the equation 
+            <span class="inline-math">\( Hx = x' \)</span>, where 
+            <span class="inline-math">\( x = (x_1, x_2)\)</span> is the point in the source image, 
+            <span class="inline-math">\( x'= (x_1', x_2') \)</span> is the point in the target image, and 
+            <span class="inline-math">\( H \)</span> is the homography matrix.
+        </p>
+
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{bmatrix}
+                    a & b & c \\
+                    d & e & f \\
+                    g & h & 1
+                \end{bmatrix}
+                \begin{bmatrix}
+                    x_1 \\
+                    x_2 \\
+                    1
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                    w x_1' \\
+                    w x_2' \\
+                    w
+                \end{bmatrix}
+                \]
+            </div>
+        </div>
+
+        <p>This gives us:</p>
+        
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{align*}
+                a x_1 + b x_2 + c &= w x_1' \\
+                d x_1 + e x_2 + f &= w x_2' \\
+                g x_1 + h x_2 + 1 &= w
+                \end{align*}
+                \]
+            </div>
+        </div>
+
+        <p>Now substituting <span class="inline-math">\( w \)</span> into the first two equations gives:</p>
+
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{align*}
+                a x_1 + b x_2 + c &= (g x_1 + h x_2 + 1) x_1' \\
+                d x_1 + e x_2 + f &= (g x_1 + h x_2 + 1) x_2'
+                \end{align*}
+                \]
+            </div>
+        </div>
+
+        <p>We now have a clean expression of <span class="inline-math">\( x_1' \)</span> and <span class="inline-math">\( x_2' \)</span>:</p>
+
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{align*}
+                a x_1 + b x_2 + c - g x_1 x_1' - h x_2 x_1' &= x_1' \\
+                d x_1 + e x_2 + f - g x_1 x_2' - h x_2 x_2' &= x_2'
+                \end{align*}
+                \]
+            </div>
+        </div>
+
+        <p>Putting it all together:</p>
+
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{bmatrix}
+                    x_1 & x_2 & 1 & 0 & 0 & 0 & -x_1 x_1' & -x_2 x_1' \\
+                    0 & 0 & 0 & x_1 & x_2 & 1 & -x_1 x_2' & -x_2 x_2'
+                \end{bmatrix}
+                \begin{bmatrix}
+                    a \\
+                    b \\
+                    c \\
+                    d \\
+                    e \\
+                    f \\
+                    g \\
+                    h
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                    x_1' \\
+                    x_2'
+                \end{bmatrix}
+                \]
+            </div>
+        </div>
+
+        <p> When we have more than two points, we simply expand the matrix:</p>
+
+        <div class="math-block">
+            <div class="math">
+                \[
+                \begin{bmatrix}
+                    x_1 & x_2 & 1 & 0 & 0 & 0 & -x_1 x_1' & -x_2 x_1' \\
+                    0 & 0 & 0 & x_1 & x_2 & 1 & -x_1 x_2' & -x_2 x_2' \\
+                    \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots
+                \end{bmatrix}
+                \begin{bmatrix}
+                    a \\
+                    b \\
+                    c \\
+                    d \\
+                    e \\
+                    f \\
+                    g \\
+                    h
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                    x_1' \\
+                    x_2' \\
+                    \vdots
+                \end{bmatrix}
+                \]
+            </div>
+        </div>
+
+        <p> 
+            To solve this equation, we can use the least squares method to find the best homography matrix that minimizes the error.
+        </p>
+
+    </section>
+
+    <section>
+        <h2>Warping Images</h2>
+        <p>After recovering the homography matrix, we can warp the source image to the target image. The process is similar to warping triangles in the Blending project. We modify that procedure into:</p>
+        <div class = "code-block">
+            <pre>
+                Create a grid of coordinates in the output image space using np.meshgrid
+                Apply the inverse homography to get the corresponding source coordinates (x, y)
+                Interpolation
+                Fill the warped image with values from the source image
+            </pre>
+        </div>
+    </section>
+
+    <section>
+        <h2>Image Rectification</h2>
+        <p> Rectification of the bookcover of Crime and Punishment</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/cp.jpg" alt="Rectification of Crime and Punishment bookcover" width="451" height="614">
+                <figcaption>Original bookcover of *Crime and Punishment* before rectification.</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/warped_cp.jpg" alt="Rectified bookcover" width="451" height="614">
+                <figcaption>Rectified bookcover of *Crime and Punishment*.</figcaption>
+            </figure>
+
+            <figure>
+                <img src="media/cp_crop.jpg" alt="Cropped bookcover" width="451" height="614">
+                <figcaption>Cropped bookcover of *Crime and Punishment*.</figcaption>
+            </figure>
+        </div>
+
+        <p> Rectification of the nutritionn fact of a snack</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/moyu.jpg" alt="Rectification of snack nutrition fact" width="451" height="614">
+                <figcaption>A snack</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/moyu_rectified.png" alt="Rectified snack nutrition fact" width="451" height="614">
+                <figcaption>Rectified nutrition fact of a snack.</figcaption>
+            </figure>
+        </div>
+
+    </section>
+
+    <section> 
+        <h2> Blend the images into a mosaic</h2>
+        <p>
+            I first warp the source image to the target image with the warpImage function. Then I pad the target image with zeros to make space for the source image. At the end, I blend the two images by two band blending with a mask computed from distance transform.
+        </p>
+
+        <div class="image-row">
+            <figure>
+                <img src="media/left.jpg" alt="Face 1" width="600" height="400">
+                <figcaption> 1</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/right.jpg" alt="Face 2" width="600" height="400">
+                <figcaption> 2</figcaption>
+            </figure>
+        </div>
+        
+            <figure>
+                <img src="media/mosaic2.jpg" alt="Mosaic" width=" 900" height="600">
+                <figcaption>Mosaic.</figcaption>
+            </figure>
+        
+
+        <div class="image-row">
+            <figure>
+                <img src="media/hallway_left.jpg" alt="Face 1" width="600" height="400">
+                <figcaption>1</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/hallway_right.jpg" alt="Face 2" width="600" height="400">
+                <figcaption>2</figcaption>
+            </figure>
+        </div>
+            <figure>
+                <img src="media/hallway_mosaic.png" alt="Mosaic" width="1000" height="500">
+                <figcaption>Mosaic.</figcaption>
+            </figure>
+        
+
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_left.jpg" alt="Face 1" width="600" height="400">
+                <figcaption>1</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/wall1_right.jpg" alt="Face 2" width="600" height="400">
+                <figcaption>2</figcaption>
+            </figure>
+
+            <figure>
+                <img src="media/wall1_mosaic.png" alt="Mosaic" width="600" height="400">
+                <figcaption>Mosaic.</figcaption>
+            </figure>
+        </div>
+
+
+
+    </section>
+
+</body>
+</html>
