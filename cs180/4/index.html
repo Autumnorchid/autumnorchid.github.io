@@ -6,9 +6,10 @@
     <title>CS 180 Project 4</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
         }
         header, footer {
             padding: 20px;
@@ -55,18 +56,27 @@
             padding: 2px 5px;
             border-radius: 3px;
         }
-    .image-row {
+        /* Style for centered image rows */
+        .image-row {
         display: flex;
         justify-content: space-around;
         align-items: flex-start;
         flex-wrap: wrap;
-        gap: 20px; /* Adjust the space between figures */
+        gap: 20px;
+        padding: 0 20px; /* Add padding for better spacing on mobile */
     }
 
+    /* Ensure each figure has a consistent width and is responsive */
     figure {
-        display: inline-block;
         text-align: center;
-        width: 451px; /* Ensure all figures have the same width */
+        flex: 1 1 300px; /* Flex-basis to control minimum figure width */
+        max-width: 1000px; /* Prevent figures from expanding too wide */
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
     }
 
     figcaption {
@@ -74,7 +84,19 @@
         font-size: 14px;
         color: #555;
     }
+    code {
+        font-family: "Courier New", Courier, monospace;
+        background-color: #f0f0f0;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.95em;
+        color: #d14;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
     </style>
+    
     <!-- Add MathJax to render LaTeX math -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -89,6 +111,52 @@
     <section>
         <h2>Shoot and digitize pictures</h2>
         <p>To morph one face to another, I need to label the corresponding points on both faces with the same order. I use a tool developed by another student in the previous semester to label them and obtain a correspondences JSON file.</p>
+        <p>Some pictures I take are in a house, inside MLK building, and in Evans 939.</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/left.jpg" alt="House" width="600" height="400">
+                <figcaption>Inside a house.</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/right.jpg" alt="House" width="600" height="400">
+                <figcaption>Inside a house.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_left.jpg" alt="Hallway" width="600" height="400">
+                <figcaption>Inside MLK building.</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/wall1_right.jpg" alt="Hallway" width="600" height="400">
+                <figcaption>Inside MLK building.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/hallway_left.jpg" alt="Go Club" width="600" height="400">
+                <figcaption>Inside MLK building.</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/hallway_right.jpg" alt="Go Club" width="600" height="400">
+                <figcaption>Inside MLK building.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/939_left.jpg" alt="Wall" width="600" height="400">
+                <figcaption>Inside Evans 939.</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/939_right.jpg" alt="Wall" width="600" height="400">
+                <figcaption>Inside Evans 939.</figcaption>
+            </figure>
+        </div>
+
     </section>
 
     <section>
@@ -222,7 +290,7 @@
         </div>
 
         <p> 
-            To solve this equation, we can use the least squares method to find the best homography matrix that minimizes the error.
+            To solve this equation, we can use the least squares method to find the best homography matrix that minimizes the error when we have more than four correspondences. When it is exactly four correspondences, we can solve the equation directly.
         </p>
 
     </section>
@@ -242,6 +310,7 @@
 
     <section>
         <h2>Image Rectification</h2>
+        <p> Rectification comes directly from warped image. The corresponding points will be directly four corners of the wanted image. I made a blank image of all black for warping purpose. Some croppings will be helpful to get the main picture we want.</p>
         <p> Rectification of the bookcover of Crime and Punishment</p>
         <div class="image-row">
             <figure>
@@ -287,19 +356,20 @@
         <div class="image-row">
             <figure>
                 <img src="media/left.jpg" alt="Face 1" width="600" height="400">
-                <figcaption> 1</figcaption>
+                <figcaption> The left</figcaption>
             </figure>
     
             <figure>
                 <img src="media/right.jpg" alt="Face 2" width="600" height="400">
-                <figcaption> 2</figcaption>
+                <figcaption> The right</figcaption>
             </figure>
         </div>
-        
+        <div class="image-row">
             <figure>
-                <img src="media/mosaic2.jpg" alt="Mosaic" width=" 900" height="600">
-                <figcaption>Mosaic.</figcaption>
+                <img src="media/mosaic1.jpg" alt="Mosaic" width=" 1050" height="600">
+                <figcaption>Mosaic</figcaption>
             </figure>
+        </div>
         
         <p>
             Inside the hallway of MLK building
@@ -307,42 +377,239 @@
         <div class="image-row">
             <figure>
                 <img src="media/hallway_left.jpg" alt="Face 1" width="600" height="400">
-                <figcaption>1</figcaption>
+                <figcaption>The left</figcaption>
             </figure>
     
             <figure>
                 <img src="media/hallway_right.jpg" alt="Face 2" width="600" height="400">
-                <figcaption>2</figcaption>
+                <figcaption>The right</figcaption>
             </figure>
         </div>
+        <div class="image-row">
             <figure>
-                <img src="media/hallway_mosaic.png" alt="Mosaic" width="1000" height="500">
-                <figcaption>Mosaic.</figcaption>
+                <img src="media/hallway_mosaic.jpg" alt="Mosaic" width="1000" height="500">
+                <figcaption>Mosaic</figcaption>
             </figure>
+        </div>
         
         <p>
-            A nearby position
+            A nearby position inside MLK building
         </p>
         <div class="image-row">
             <figure>
                 <img src="media/wall1_left.jpg" alt="Face 1" width="600" height="400">
-                <figcaption>1</figcaption>
+                <figcaption>The left</figcaption>
             </figure>
     
             <figure>
                 <img src="media/wall1_right.jpg" alt="Face 2" width="600" height="400">
-                <figcaption>2</figcaption>
+                <figcaption>The right</figcaption>
             </figure>
-
+        </div>
+        <div class="image-row">
             <figure>
-                <img src="media/wall1_mosaic.png" alt="Mosaic" width="600" height="400">
-                <figcaption>Mosaic.</figcaption>
+                <img src="media/wall1_mosaic.jpg" alt="Mosaic" width="600" height="400">
+                <figcaption>Mosaic</figcaption>
+            </figure>
+        </div>
+        <p> Inside Evans 939</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/939_left.jpg" alt="Face 1" width="600" height="400">
+                <figcaption>The left</figcaption>
+            </figure>
+    
+            <figure>
+                <img src="media/939_right.jpg" alt="Face 2" width="600" height="400">
+                <figcaption>The right</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/939_mosaic.jpg" alt="Mosaic" width="600" height="400">
+                <figcaption>Mosaic</figcaption>
             </figure>
         </div>
 
 
-
     </section>
 
+    <section>
+        <h1> Part B: Feature Matching for Autostitching</h1>
+    </section>
+
+    <section>
+        <h2> Harris Interest Point Detector </h2>
+        <p> I used the provided harris.py to find all harris corners. I selected the the first 5000 Harris corners to be displayed otherwise there will be 40000 corners for this image. </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_left.jpg" alt="Harris corners" width="600" height="400">
+                <figcaption> The original image.</figcaption>
+            </figure>
+            <figure>
+                <img src="media/wall1_harris.png" alt="Harris corners" width="600" height="400">
+                <figcaption> With 5000 Harris corners.</figcaption>
+            </figure>
+            <figure>
+                <img src="media/wall1_harris_all.png" alt="Harris corners" width="600" height="400">
+                <figcaption> With all Harris corners.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h2> Adaptive Non-Maximal Suppression (ANMS) </h2>
+        <p> With Harris corner detection, we get corners but there are too many corners. A lot of Harris corners contain redudant information. We can apply Adaptive Non-Maximal Suppression (ANMS) to suppress any point based on their corner strength. We use KDTree to find the nearest neighbors instead of using L2 distances to every point for finding nearest neighbbors, which would be very slow and memory-comsuming. We will need to build a n*n matrix where n is the number of corners passed in.</p>
+        <div class = "code-block">
+            <pre>
+                Initialize a list size n of radius to infinity, n=number of corners
+                Build a KDTree with the corners
+                For each corner i:
+                    Find neighbors within the current radius
+                    Increase radius until at least one neighbor is found or radius exceeds a maximum limit
+                    Filter neighbors to keep only those with higher strength by threshold factor
+                    If there are stronger neighbors, compute the minimum distance to them
+            </pre>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_anms.png" alt="ANMS corners" width="600" height="400">
+                <figcaption> Top 500 ANMS corners.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h2> Extracting Feature Descriptor </h2>
+        <p> I use the technique of finding matching descriptor described in the paper to find them. We sample a 40*40 patch of pixels around the keypoint(corner) points and them resize the patch to be 8*8 by <code>skimage.transform.resize</code> (spacing of 5 pixels). Here are 25 corners and they look nice as they point out the corners. </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_descriptors.png" alt="Feature descriptor" width="600" height="400">
+                <figcaption> Feature descriptor.</figcaption>
+            </figure>
+        </div>
+    </section>
+    
+    <section>
+        <h2> Matching Feature Descriptors </h2>
+        <p> Now we have found the feature descriptors from both images, we want to know their correspondences. We rely on the ratio between the first and the second nearest neighbors (Lowe's ratio). Here is a pseudocode: </p>
+        <div class = "code-block">
+            <pre>
+                Compute pairwise differences using broadcasting
+                Calculate the sum of squared differences between each pair of features
+                Sort SSD within each row and get the indices of the sorted values
+                Calculate Lowe's ratio for each feature
+                Pair nearest neighbor indices with corresponding features in features1
+                Extract final matches that pass the Lowe's threshold
+            </pre>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_matches.png" alt="Matching feature descriptors" width="1000" height="700">
+                <figcaption> Matching feature descriptors.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h2> RANSAC </h2>
+        <p> Now we have seen different macthes but not all matches are good. We can use RANSAC find the best homography matrix. The RANSAC algorithm essensilly samples four random matches and then construct a homography and determine if that homography is a good fit for other points by computing the euclident distance bween the warpped coordinates to their corresponding coordinates. We use certain thresholds to count the number of inliers and update the best homography. A pseudocode will be:
+        </p>
+        <div class = "code-block">
+            <pre>
+                For i in range(num_iterations):
+                    Randomly sample 4 matches and compute homography
+                    Warp the coordinates of the first image for the points in matches(matched points computed in the previous step)
+                    Compute the Euclidean distance between the warped coordinates and the corresponding points in the second image
+                    Count the number of inliers
+                    If the number of inliers is greater than the best number of inliers:
+                        Update the best number of inliers
+                        Update the best homography
+            </pre>  
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_ransac.png" alt="RANSAC" width="1000" height="700">
+                <figcaption> RANSAC.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h2> Autostitching</h2>
+        <p> RANSAC will gives us a nice groupd of inliers that we can compute homography. With the homography matrix, we can stitch the two images together. </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_left.jpg" alt="Left image" width="600" height="400">
+                <figcaption> Left image.</figcaption>
+            </figure>
+            <figure>
+                <img src="media/wall1_right.jpg" alt="Right image" width="600" height="400">
+                <figcaption> Right image.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_mosaic.jpg" alt="Autostitched image" width="1200" height="800">
+                <figcaption> Manual labeled mosaic image.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/wall1_autostitched.jpg" alt="Autostitched image" width="1200" height="800">
+                <figcaption> Autostitched image.</figcaption>
+            </figure>
+        </div>
+        
+        <div class="image-row">
+            <figure>
+                <img src="media/left.jpg" alt="Autostitched image" width="600" height="400">
+                <figcaption> Left image.</figcaption>
+            </figure>
+            <figure>
+                <img src="media/right.jpg" alt="Autostitched image" width="600" height="400">
+                <figcaption> Right image.</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+        <figure>
+            <img src="media/mosaic1.jpg" alt="Autostitched image" width="1200" height="800">
+            <figcaption> Manual labeled mosaic image.</figcaption>
+        </figure>
+    </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/house_mosaic_ransac.jpg" alt="Autostitched image" width="1200" height="800">
+                <figcaption> Autostitched image.</figcaption>
+            </figure>
+        </div>
+        <p> These are photoed in Evans 939. The Go Club @Berkeley is having its weekly meeting to play Go(围棋)</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/939_left.jpg" alt="Autostitched image" width="600" height="400">
+                <figcaption> Left image.</figcaption>
+            </figure>
+            <figure>
+                <img src="media/939_right.jpg" alt="Autostitched image" width="600" height="400">
+                <figcaption> Right image.</figcaption>
+            </figure>
+            </div>
+            <div class="image-row">
+            <figure>
+                <img src="media/939_mosaic.jpg" alt="Autostitched image" width="1200" height="800">
+                <figcaption> Manual labeled mosaic image.</figcaption>
+            </figure>
+        <div class="image-row">
+            <figure>
+                <img src="media/939_mosaic_ransac.jpg" alt="Autostitched image" width="1200" height="800">
+                <figcaption> Autostitched image.</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> What Have I Learned</h2>
+        <p> In part A, I learn to warp images, though the process is similar to warping triangles in face morphing.</p>
+        <p> In part B, I have learned how to use Harris corner detector, ANMS, feature descriptor, matching feature descriptor, and RANSAC to stitch two images together. Each algorithm does a certain job well and combining them into a pipeline allows me to generate a mosaic automatically. I think it is very cool to see everything works out nicely. I really appreciate computer scientists who came up with these ideas. </p>
+    </section>
 </body>
 </html>
