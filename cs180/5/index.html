@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 4</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        header, footer {
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #111111;
+            color: white;
+        }
+        section {
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+        }
+        p {
+            text-align: left;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        img {
+            text-align: center;
+        }
+        footer {
+            background-color: #f1f1f1;
+        }
+        /* Style for math equations */
+        .math {
+            text-align: center;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        /* Add some padding around code/math blocks */
+        .math-block {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        /* Style for inline math */
+        .inline-math {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    .image-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap between figures as needed */
+}
+
+.image-row figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+    /* Ensure each figure has a consistent width and is responsive */
+    figure {
+        text-align: center;
+        flex: 1 1 300px; /* Flex-basis to control minimum figure width */
+        max-width: 1000px; /* Prevent figures from expanding too wide */
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .fixed-size-image {
+    width: 275px;
+    height: 275px;
+    object-fit: contain;
+    }
+    .small-size-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    }
+
+    figcaption {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #555;
+    }
+    code {
+        font-family: "Courier New", Courier, monospace;
+        background-color: #f0f0f0;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.95em;
+        color: #d14;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+    </style>
+    
+    <!-- Add MathJax to render LaTeX math -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>CS 180 Project 5</h1>
+        <h3>David Li</h3>
+    </header>
+
+    <section>
+        <h2>Part 0: Setup</h2>
+        <p>
+            Seed is set to 18024 throughout this project.
+            In part 0, I generated three images withe three prompts, “an oil painting of a snowy mountain village”,
+            "a man wearing a hat", and "a rocket ship". 
+        </p>
+        <div class="image-row">
+            <figure style="text-align: center;">
+                <img src="media/0/oil_painting.png" alt="Image 0_0">
+                <figcaption>an oil painting of a snowy mountain village</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/man_hat.png" alt="Image 0_1">
+                <figcaption>a man wearing a hat</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/rocket_ship.png" alt="Image 0_2">
+                <figcaption>a rocket ship</figcaption>
+            </figure>
+        </div>
+        <p>
+            The initial <code>num_inference_steps</code> was set to 20. I also try to increase the value to 50 and 100 to see the difference. 
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/oil_painting_50.png" alt="Image 0_0_50">
+                <figcaption>an oil painting of a snowy mountain village (50 steps)</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/man_hat_50.png" alt="Image 0_1_50">
+                <figcaption>a man wearing a hat (50 steps)</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/rocket_ship_50.png" alt="Image 0_2_50">
+                <figcaption>a rocket ship (50 steps)</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/oil_painting_100.png" alt="Image 0_0_100">
+                <figcaption>an oil painting of a snowy mountain village (100 steps)</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/man_hat_100.png" alt="Image 0_2_100">
+                <figcaption>a man wearing a hat (100 steps)</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/rocket_ship_100.png" alt="Image 0_2_100">
+                <figcaption>a rocket ship (100 steps)</figcaption>
+            </figure>
+        </div>
+        <p>
+            The qualities of these images are improved as the number of inference steps increases with more details and elements. For example, the oil painting of a snowy mountain village has trees better decorated and the man has a hat with more details as the number of steps increases.
+        </p>    
+    </section>
+    <section>
+        <h2>Part 1: Sampling Loop</h2>
+        <p>
+            In part 1, I use the pretrained DeepFloyd denoisers to write sampling loops. I will deploy diffusion model (DeepFloyd) to generate images.
+        </p>
+    </section>
+    <section>
+        <h2>1.1 Implementing the Forward Process</h3>
+        <p>
+            I implement the forward process in the <code>forward</code> function, and produce the following images at various noise levels (in different timesteps).
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/camp_original.png" alt="Image 1_0", class="fixed-size-image">
+                <figcaption>Berkeley Campanile</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.1t250.png" alt="Image 1_1", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=250</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.1t500.png" alt="Image 1_2", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=500</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.1t750.png" alt="Image 1_3", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=750</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2>
+            1.2 Classical Denoising
+        </h2>
+        <p>
+            I implement the classical denoising process in the <code>denoise</code> function using Gaussian blur filter and produce the following images.
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t250.png" alt="Image 1_4", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=250</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.2t250.png" alt="Image 1_5", class="fixed-size-image">
+                <figcaption>Denoised Campanile at t=250</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t500.png" alt="Image 1_4", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=500</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.2t500.png" alt="Image 1_5", class="fixed-size-image">
+                <figcaption>Denoised Campanile at t=500</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t750.png" alt="Image 1_4", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=750</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.2t750.png" alt="Image 1_5", class="fixed-size-image">
+                <figcaption>Denoised Campanile at t=750</figcaption>
+            </figure>
+        </div>  
+    </section>
+    <section>
+        <h2> 1.3 One-Step Denoising </h2>
+        <p>
+            I implement the one-step denoising process in the <code>one_step_denoise</code> function with a trained Unet model. We first recover Gaussian noise and then remove it from the noisy image. The following images are produced.
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t250.png" alt="Image 1_6", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=250</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.3t250.png" alt="Image 1_7", class="fixed-size-image">
+                <figcaption>One-step Denoised Campanile at t=250</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t500.png" alt="Image 1_6", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=500</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.3t500.png" alt="Image 1_7", class="fixed-size-image">
+                <figcaption>One-step Denoised Campanile at t=500</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.1t750.png" alt="Image 1_6", class="fixed-size-image">
+                <figcaption>Noisy Campanile at t=750</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.3t750.png" alt="Image 1_7", class="fixed-size-image">
+                <figcaption>One-step Denoised Campanile at t=750</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 1.4 Iterative Denoising</h2>
+        <p> One-Step denoising is great but defusion models denoise iteratively. We can run the difusion model 1000 times but that would be very slow. Hence, we use strided_timesteps to speed up the process. </p>
+        <div class="math-block">
+            <div class="math">
+                $$ x_{t'} = \frac{\sqrt{\bar\alpha_{t'}}\beta_t}{1 - \bar\alpha_t} x_0 +
+                \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t'})}{1 - \bar\alpha_t} x_t +
+                v_\sigma$$
+            </div>
+        </div>
+        <p> The variables are: </p>
+        <div class=""image-row>
+            <figure>
+                <img src="media/0/1.4.png" alt="Image 1_8">
+            </figure>   
+        </div>
+        <p>The following images are produced.</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.4t90.png" alt="Image 1_8", class="small-size-image">
+                <figcaption>Noisy Campanile at t=90</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.4t240.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Noisy Campanile at t=240</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.4t390.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Noisy Campanile at t=390</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.4t540.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Noisy Campanile at t=540</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.4t690.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Noisy Campanile at t=690</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/camp_original.png" alt="Image 1_8", class="small-size-image">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.4iter_clean.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Iterative Denoised Campanile</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.3t750.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>One-step Denoised Campanile</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.2t750.png" alt="Image 1_9", class="small-size-image">
+                <figcaption>Gaussian Blurred Campanile</figcaption>
+            </figure>
+
+        </div>
+    </section>
+    <section>
+        <h2> 1.5 Difussion Model Sampling</h2>
+        <p> With iterative denoising implemented, we can use it to generate images. We can do this by setting i_start = 0 and passing in random noise. This effectively denoises pure noise. Below we show 5 results of "a high quality photo". </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.5p1.png" alt="Image 1_10", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.5p2.png" alt="Image 1_11", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.5p3.png" alt="Image 1_12", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.5p4.png" alt="Image 1_13", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.5p5.png" alt="Image 1_14", class="small-size-image">
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 1.6 Classfier Free Guidance (CFG) </h2>
+        <p> The images above seem okay but not as good as we thought. We now need to implement Classifier Free Guidance. Epsilons here are conditional and an unconditional noise estimate. </p>
+        <div class="math-block">
+            <div class="math">
+                $$\epsilon = \epsilon_u + \gamma
+                (\epsilon_c - \epsilon_u)$$
+            </div>
+        </div>
+        <p> We generate 5 images of "a high quality photo" with a CFG scale of 7. The results look much better.</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.6p1.png" alt="Image 1_10", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.6p2.png" alt="Image 1_11", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.6p3.png" alt="Image 1_12", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.6p4.png" alt="Image 1_13", class="small-size-image">
+            </figure>
+            <figure>
+                <img src="media/0/1.6p5.png" alt="Image 1_14", class="small-size-image">
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 1.7 Image-to-image Translation</h2>
+        <p> The more noise we add, the larger the edit will be. In this part, we are going to add in different levels of noise by starting at different timesteps. We will see how the amount of noise added in impacts the denoising. The less noise we add, the closer we will get to the original picture. This is the SDEdit algorithm. We again run in on Campanile and several other pictures. Interesting things appear. Some look alike and some look alike in an unconventional fashion</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.7campanile1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7campanile3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7campanile5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7campanile7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7campanile10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7campanile20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/camp_original.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Campanile</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.7hoover1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7hoover3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7hoover5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7hoover7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7hoover10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7hoover20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7hoover.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Hoover Tower in Stanford</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.7flamingo1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7flamingo3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7flamingo5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7flamingo7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7flamingo10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7flamingo20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7flamingo.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>flamingo</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.7apple1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7apple3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.7apple5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7apple7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7apple10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7apple20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.7apple.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>apple</figcaption>
+            </figure>
+        </div>
+
+    </section>
+    <section>
+        <h2> 1.7.1 Editing Hand-Drawn and Web Images</h2>
+        <p> With the same technique as above, we can put more images to test, espically Hand-Drawn images. </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.71avocado1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71avocado3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71avocado5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71avocado7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71avocado10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71avocado20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71avocado.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Avocado</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.71house1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71house3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71house5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71house7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71house10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71house20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71house.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>house</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.71eiffel1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71eiffel3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.71eiffel5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71eiffel7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71eiffel10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71eiffel20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.71eiffel.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Eiffel Tower (with a lot of simplification)</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 1.7.2 Inpainting images</h2>
+        <p> We can use the same procedure to implement inpainting, but now we use a mask. We would have area that perserves the old content and area that imports new content. The calculation of x_t is similar but with mask involved. </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.72formula.png" alt="Image 1_10", class="small-size-image">
+            </figure>
+       </div>
+        <p> The last two pictures and masks come from Scene Completion dataset. http://graphics.cs.cmu.edu/projects/scene-completion/ </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.72.1im.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>Campanile</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.1mask.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Mask</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.1replace.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>To be replaced</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.1ouput.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Inpainted</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.72.2im.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>Campanile</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.2mask.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Mask</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.2replace.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>To be replaced</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.2output.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Inpainted</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.72.3im.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>Boston Street</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.3mask.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Mask</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.3replace.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>To be replaced</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.72.3output.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Inpainted</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 1.7.3 Text-Conditioned Image-to-image Translation</h2>
+        <p>Previously, we use the standard prompt of "a high quality photo," but now we can change it a little with some other prompts such as "a rocket ship"</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.73.1t1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.1t3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.1t5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.1t7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.1t10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.1t20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/camp_original.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Campanile</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.73.2t1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.2t3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.2t5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.2t7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.2t10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.2t20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/boston.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Boston Street</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.73.3t1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=1</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.3t3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=3</code></figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.73.3t5.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=5</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.3t7.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=7</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.3t10.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=10</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/1.73.3t20.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>SDEdit with <code>i_start=20</code></figcaption>
+            </figure> 
+            <figure>
+                <img src="media/0/shanghai.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Shanghai</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+
+        <h2> 1.8 Anagram </h2>
+        <p>
+            To create an anagram, all we need to do is repeat the same process twice, but with diffrent prompts we flip them. After getting the generated noises from both prompts, we take the average of the two. The algorithm is as follows:
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.8algo.png" alt="Image 1_10", class="small-size-image">
+            </figure>
+       </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.8.1" alt="Image 1_10", class="small-size-image">
+                <figcaption>An oil painting of an old man</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.8.1down.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>An oil painting of people around a campfire</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.8.2" alt="Image 1_10", class="small-size-image">
+                <figcaption>An oil painting of an old man</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.8.2down.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>A rocket ship</code></figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.8.3" alt="Image 1_10", class="small-size-image">
+                <figcaption>A photo of dog</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.8.3down.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>A rocket ship</figcaption>
+            </figure>
+        </div>
+
+    </section>
+    <section>
+        <h2> 1.9 Hybrid Images </h2>
+        <p> 
+            Hybrid images are images that look like one thing from a distance and another thing up close. Traiditionally, We can create these by taking the high frequency components of one image and the low frequency components of another image. We can then combine them to create a hybrid image. We here can do the same thing but let the diffusion model do the work. We can generate a noise for each image and then combine them. The results are below.
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="media/0/1.9hybrid1.png" alt="Image 1_10", class="small-size-image">
+                <figcaption>Hybrid image of a skull and a waterfall</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.9hybrid2.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Hybrid image of a waterfall and a rocket ship</figcaption>
+            </figure>
+            <figure>
+                <img src="media/0/1.9hybrid3.png" alt="Image 1_11", class="small-size-image">
+                <figcaption>Hybrid image of a pencil and a snowy mountain village</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h1> Part B: Diffusion Models from Scratch</h1>
+    </section>
+
+    <section>
+        <h1> Part 1: Training a Single-Step Denoising UNet</h1>
+    </section>
+
+    <section>
+        <h2> 1.1 Implementing the UNet</h2>
+        <p> we will train a UNet model that can iteratively denoise an image. We will implement DDPM in this part. We follow the same equation as above. I implement Conv, DownConv, UpConv, Flatten, Unflatten, ConvBlock, DownBlock, UpBlock.</p>
+    </section>
+
+    <section>
+        <h2> 1.2 Using the UNet to Train a Denoiser</h2>
+        <p> I can add Gaussian noises to the images with diffrent noise levels. I train an unconditional U-Net model on the MNIST dataset. The model was trained to reconstruct clean images from noisy inputs.</p>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/1.2.png" alt="Image 1_11">
+                <figcaption>Varying levels of noise on MNIST digits</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/1.2.1.png" alt="Image 1_11">
+                <figcaption>Training Loss Curve</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/1.2.1output.png" alt="Image 1_11">
+                <figcaption>Results on digits from the test set after 1 epoch of training and 5 epochs</figcaption>
+                <figcaption>Row1: Input</figcaption>
+                <figcaption>Row2: Noisy (sigma=0.5)</figcaption>
+                <figcaption>Row3: After 1 epoch training</figcaption>
+                <figcaption>Row4: After 5 epochs training</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/1.2.2.png" alt="Image 1_11">
+                <figcaption>Results on digits from the test set with varying noise levels</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2>Part 2: Training a Diffusion Model </h2>
+    </section>
+    <section> 
+        <h2>2.1 Adding Time Conditioning to UNet</h2>
+        <p> We now add time embeddings to enhance performance</p>
+    </section>
+    <section>
+        <h2> 2.2 Training the UNet</h2>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/2.2.png" alt="Image 1_11">
+                <figcaption>Time-Conditioned UNet training loss curve</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 2.3 Sampling from the UNet</h2>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/2.3epoch5.png" alt="Image 1_11">
+                <figcaption>Epoch 5</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.3epoch20.png" alt="Image 1_11">
+                <figcaption>Epoch 20</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 2.4 Adding Class-Conditioning to UNet</h2>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/2.4.png" alt="Image 1_11">
+                <figcaption>Class-conditioned UNet training loss curve</figcaption>
+            </figure>
+        </div>
+    </section>
+    <section>
+        <h2> 2.5 Sampling from the Class Conditioned UNet</h2>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/2.5epoch5-0.png" alt="Image 1_11">
+                <figcaption>Epoch 5 - 0</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch5-1.png" alt="Image 1_11">
+                <figcaption>Epoch 5 - 1</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch5-2.png" alt="Image 1_11">
+                <figcaption>Epoch 5 - 2</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch5-3.png" alt="Image 1_11">
+                <figcaption>Epoch 5 - 3</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="media/b/2.5epoch20-0.png" alt="Image 1_11">
+                <figcaption>Epoch 20 - 0</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch20-1.png" alt="Image 1_11">
+                <figcaption>Epoch 20 - 1</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch20-2.png" alt="Image 1_11">
+                <figcaption>Epoch 20 - 2</figcaption>
+            </figure>
+            <figure>
+                <img src="media/b/2.5epoch20-3.png" alt="Image 1_11">
+                <figcaption>Epoch 20 - 3</figcaption>
+            </figure>
+        </div>
+    </section>
+</body>
