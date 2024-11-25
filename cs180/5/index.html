@@ -893,7 +893,7 @@
     </section>
     <section> 
         <h2>2.1 Adding Time Conditioning to UNet</h2>
-        <p> We now add time embeddings to enhance performance to predict noises. The conditioning is done through FCBlock (fully connected block). Using B.1 algorithm, we train the unet to predict noise using batch size 128, hidden dimension 64, in an Adam optimizer with learning rate starting at 1e-3. We use an exponential learning rate decay scheduler with a gamma of $0.1^(1.0/num_epochs)$</p>
+        <p> We now add time embeddings to enhance performance to predict noises. The conditioning is done through FCBlock (fully connected block). Using B.1 algorithm, we train the unet to predict noise using batch size 128, hidden dimension 64, in an Adam optimizer with learning rate starting at 1e-3. We use an exponential learning rate decay scheduler with a gamma of $0.1^{(1.0/numepochs)}$</p>
     </section>
     <section>
         <h2> 2.2 Training the UNet</h2>
