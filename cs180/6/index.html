@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 180 Project 6</title>
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        header, footer {
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #111111;
+            color: white;
+        }
+        section {
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+        }
+        p {
+            text-align: left;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        img {
+            text-align: center;
+        }
+        footer {
+            background-color: #f1f1f1;
+        }
+        /* Style for math equations */
+        .math {
+            text-align: center;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        /* Add some padding around code/math blocks */
+        .math-block {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        /* Style for inline math */
+        .inline-math {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    .image-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap between figures as needed */
+}
+
+.image-row figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+    /* Ensure each figure has a consistent width and is responsive */
+    figure {
+        text-align: center;
+        flex: 1 1 300px; /* Flex-basis to control minimum figure width */
+        max-width: 1000px; /* Prevent figures from expanding too wide */
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .fixed-size-image {
+    width: 275px;
+    height: 275px;
+    object-fit: contain;
+    }
+    .small-size-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    }
+
+    figcaption {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #555;
+    }
+    code {
+        font-family: "Courier New", Courier, monospace;
+        background-color: #f0f0f0;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.95em;
+        color: #d14;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+    </style>
+    
+    <!-- Add MathJax to render LaTeX math -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+</head>
