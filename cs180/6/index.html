@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS 180 Project 6</title>
+    <title>CS 180 Final Project</title>
     <style>
         body {
         font-family: Arial, sans-serif;
@@ -122,3 +122,289 @@
         };
     </script>
 </head>
+
+<body>
+    <header>
+        <h1>CS 180 Final Project: Image Quilting and Gradient Domain Fusion</h1>
+    </header>
+    <section>
+        <h1>Image Quilting</h1>
+        <p>Texture is always an interesting topic in computer vision. This project implements the image quilting algorithm for texture synthesis and transfer, described in a SIGGRAPH 2001 paper by Efros and Freeman. </p>
+    </section>
+
+    <section>
+        <h2>Randomly Sampled Texture</h2>
+        <p> The simplest way to synthesize a texture is to randomly sample patches from the input texture and paste them together. This method, however, often results in visible seams between the patches. </p>
+        <p> The following results use patch_size of 15, and out_size of 100.</p>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/bricks_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/bricks_quilt_random.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Randomly Sampled</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/text_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/text_quilt_random.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Randomly Sampled</figcaption>
+            </figure>
+        </div>
+
+
+    </section>
+
+    <section>
+        <h2>Overlapping Patches </h2>
+        <p> We can simply do better by sampling patches in size <code>patch_size</code> from the sample with <code>overlap</code> with the existings patches. We compute the cost of each patch by the sum of sqaured differences (SSD) between the overlapping regions of the existing patch and the sampled patch. At the end of this process, we copy the pixel values of the patch to the output image.  </p>
+        <h3>Procedure</h3>
+                <ul>
+                    For each patch location in the output grid (row, column):
+                    <ol>
+                    <li><strong>Determine Patch Region:</strong>
+                        <ul>
+                            <li>Define the patch region in <code>output</code> as <code>R</code>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Handle Overlap Mask:</strong>
+                        <ul>
+                            Construct a binary mask <code>mask</code> for overlapping regions
+                        </ul>
+                    </li>
+                    <li><strong>Error Matching:</strong>
+                        <ul>
+                            <li>Compute the <strong>Sum of Squared Differences (SSD)</strong> between <code>R</code> and candidate patches in <code>sample</code>.</li>
+                            <li>Extract the central region of the SSD to avoid edge effects.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Select Patch:</strong>
+                        <ul>
+                            <li>Select a candidate patch with SSD below the tolerance <code>tol</code>, introducing randomness.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Update Output:</strong>
+                        <ul>
+                            <li>Copy the selected patch into <code>R</code>, ensuring overlap alignment.</li>
+                        </ul>
+                    </li>
+                </ol>
+                </ul>
+        </ol>
+        <p> The following results are generated under patch_size=50, overlap=25, and tolerance=3 </p>
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/bricks_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/bricks_quilt_simple_50.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Overlapping Patches Measured by Sum of Squared Differences (SSD)</figcaption>
+            </figure>
+        </div>
+        
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/text_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/text_small_quilt_simple_50.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Overlapping Patches Measured by Sum of Squared Differences (SSD)</figcaption>
+            </figure>
+        </div>
+        
+
+        <p> The image on the right shows the result of the image quilting algorithm with overlapping patches. The seams are less visible compared to the randomly sampled texture, but there are still noticeable artifacts. </p>
+    </section>
+
+    <section>
+        <h2>Seam Finding</h2>
+        <p> Overall, overlapping patches reduce the visibility of seams, but they do not eliminate them entirely. To address this issue, we can use the <strong>minimum error boundary cut</strong> algorithm to find the optimal seam between two patches. Such optimal cut is found through dynamic programming. Choosing the patch size seems to be a heuristic. A good patch size should be larger than "the texture item," whatever one defines it to be. For example, if we are sampling the bricks, a nice patch size should be large enough to cover both edges of a brick (the width of a brick).  </p>
+        <p> The following results are generated under patch_size=50, overlap=25, and tolerance=3 </p>
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/bricks_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/bricks_quilt_cut_50_25.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Seam Finding</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/text_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/text_quilt_cut1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Seam Finding</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/go.png" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/go_quilt_cut.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Seam Finding</figcaption>
+                <figcaption>Instead of playing on a 19x19 Go board, now we are playing on 23x23 board! </figcaption>
+            </figure>
+        </div>
+
+        
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/pollock.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Original Pollock</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/pollock_quilt_cut.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Seam Finding</figcaption>
+                <figcaption>This is the texture of Pollock! </figcaption>
+            </figure>
+        </div>
+
+        <p>
+            Here, we show an example of the seam finding process. We first find the location to fill in. Then we find the best patch to fill in. Then, we find the optimal seam between the two patches by getting the best cut illustrated by the vertical mask and horizontal mask combined.
+        </p>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/brick_illustration.png" alt="Overlap Mask">
+                
+            </figure>
+        </div>
+
+    </section>
+
+    <section>
+        <h2>Texture Transfer</h2>
+        <p> Texture transfer is the process of applying the texture of one image to another image. This can be done by synthesizing a texture from the source image and transferring it to the target image. The process involves guidance from the target image. </p>
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/bricks_small.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/sketch_1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Target Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/sketch_on_bricks.jpg" class="fixed-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Texture Transfer</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/texture.png" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/sketch_1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Target Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/sketch_on_texture.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Texture Transfer</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/texture.png" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/feynman_1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Target Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/feynman_on_texture.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Texture Transfer</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/sketch_1.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/feynman_1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Target Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/feynman_on_sketch.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Texture Transfer</figcaption>
+            </figure>
+        </div>
+        <p>
+            The images above show the results of texture transfer from the source image to the target image. The texture of the source image is synthesized and transferred to the target image, creating a new image that combines the texture of the source image with the structure of the target image. Yet, if we zoom in a little bit, we can see the block artifacts. We can address this issue by using the iterative texture transfer method.
+        </p>
+
+    </section>
+
+    <section>
+        <h2>Iterative Texture Transfer (Bells and Whistles) </h2>
+        <p> The paper describes a method for texture transfer that iteratively synthesizes a texture from the source image and transfers it to the target image. This process is repeated multiple times to refine the texture transfer. </p>
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/texture.png" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/sketch_1.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Target Image</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/feynman_on_sketch.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Texture transfer (without iteration)</figcaption>
+            </figure>
+        </div>
+        <div class="image-row">
+            <figure>
+                <img src="image-quilting/iterative_1.jpg" class="fixed-size-image" alt="Overlap Mask">
+                <figcaption>Iterative 1</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/iterative_2.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Iterative 2</figcaption>
+            </figure>
+            <figure>
+                <img src="image-quilting/iterative_3.jpg" class="fixed-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Iterative 3</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <section>
+        <h2>Acknowledgement</h2>
+        <p>
+            Efros and Freeman, Image Quilting for Texture Synthesis and Transfer, SIGGRAPH 2001. 
+            <a href="https://people.eecs.berkeley.edu/~efros/research/quilting/quilting.pdf">Link to the paper</a>
+        </p>
+
+        <a href="https://yxw.cs.illinois.edu/course/CS445/F21/projects/quilting/ComputationalPhotography_ProjectQuilting.html">Project description</a>
+    </section>
+
+
+    <section>
+        <h1>Gradient Domain Fusion</h1>
+        <p> Gradient domain fusion is a technique used to blend images together seamlessly. This project implements the gradient domain fusion algorithm. </p>
+    </section>
+</body>
