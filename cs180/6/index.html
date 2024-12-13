@@ -292,7 +292,7 @@
 
     <section>
         <h2>Texture Transfer</h2>
-        <p> Texture transfer is the process of applying the texture of one image to another image. This can be done by synthesizing a texture from the source image and transferring it to the target image. The process involves guidance from the target image. </p>
+        <p> Texture transfer is the process of applying the texture of one image to another image. This can be done by synthesizing a texture from the source image and transfering it to the target image. The process involves guidance from the target image. The procedure is very similar to the seam finding process. The modification happens when we calculate ssd of the patches, where we take the ssds between the guidance image patches and the sample image into account. We compute the combined ssd as <code>ssd = alpha * ssd + (1 - alpha) * ssd_guidance</code> We introduce a parameter alpha to indicate the strength of target image. <code>alpha = 0.5</code> is used in the following cases.</p>
         <div class="image-row">
             <figure>
                 <img src="image-quilting/bricks_small.jpg" class="fixed-size-image" alt="Overlap Mask">
@@ -361,7 +361,8 @@
 
     <section>
         <h2>Iterative Texture Transfer (Bells and Whistles) </h2>
-        <p> The paper describes a method for texture transfer that iteratively synthesizes a texture from the source image and transfers it to the target image. This process is repeated multiple times to refine the texture transfer. </p>
+        <p> The paper describes a method for texture transfer that iteratively synthesizes a texture from the source image and transfers it to the target image. This process is repeated multiple times to refine the texture transfer as computing ssd now involves ssd's from previous iteration. <code>ssd = alpha * (ssd + ssd_prev) + (1 - alpha) * ssd_guidance
+        </code> </p>
         <div class="image-row">
             <figure>
                 <img src="image-quilting/texture.png" class="fixed-size-image" alt="Overlap Mask">
@@ -406,5 +407,17 @@
     <section>
         <h1>Gradient Domain Fusion</h1>
         <p> Gradient domain fusion is a technique used to blend images together seamlessly. This project implements the gradient domain fusion algorithm. </p>
+    </section>
+
+    <section>
+        <h2>Toy Problem</h2>
+    </section>
+
+    <section>
+        <h2>Poisson Blending</h2>
+    </section>
+
+    <section>
+        <h2>Mixed Gradient (Bells and Whistles)</h2>
     </section>
 </body>
