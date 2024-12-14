@@ -484,12 +484,35 @@
             <figure>
                 <img src="gradient-domain-fusion/direct_combined.jpg" class="small-size
                 -image" alt="Sum of Squared Differences (SSD)">
-                <figcaption>Direct placement</figcaption>
+                <figcaption>Direct placement (with a very coarse mask)</figcaption>
             </figure>
             <figure>
                 <img src="gradient-domain-fusion/poisson_blend.jpg" class="small-size
                 -image" alt="Sum of Squared Differences (SSD)">
-                <figcaption>Output</figcaption>
+                <figcaption>Output (with a very coarse mask)</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/penguin-chick.jpeg" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Object</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/im2.JPG" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Background</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/penguin_direct_combined.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Direct placement (with a refined mask) </figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/penguin_poisson_blend.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Output (with a refined mask)</figcaption>
             </figure>
         </div>
 
@@ -578,16 +601,26 @@
         </div>
 
         <p>
-            If we take a closer look at the results of the mixed gradient. The result is better than the Poisson blending results when all the artifacts disappear at the edges of the original objects.
+            If we take a closer look at the results of the mixed gradient. The result is better than the Poisson blending result under a coarse mask when all the artifacts disappear at the edges of the original objects. It shows the robustness of the mixed gradient method because masks are not always perfect.
         </p>
-<div class="image-row">
+    <div class="image-row">
         <figure>
             <img src="gradient-domain-fusion/poisson_blend.jpg"  alt="Sum of Squared Differences (SSD)">
-            <figcaption>Poisson blending</figcaption>
+            <figcaption>Poisson blending (a very coarse rectangle mask)</figcaption>
         </figure>
         <figure>
             <img src="gradient-domain-fusion/mixed_blend.jpg" alt="Sum of Squared Differences (SSD)">
-            <figcaption>Mixed blending</figcaption>
+            <figcaption>Mixed blending (a very coarse rectangle mask)</figcaption>
+        </figure>
+    </div>
+    <div class="image-row">
+        <figure>
+            <img src="gradient-domain-fusion/penguin_poisson_blend.jpg"  alt="Sum of Squared Differences (SSD)">
+            <figcaption>Poisson blending (a refined mask)</figcaption>
+        </figure>
+        <figure>
+            <img src="gradient-domain-fusion/penguin_mixed_blend.jpg" alt="Sum of Squared Differences (SSD)">
+            <figcaption>Mixed blending (a refined mask)</figcaption>
         </figure>
     </div>
 
