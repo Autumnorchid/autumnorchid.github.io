@@ -406,18 +406,191 @@
 
     <section>
         <h1>Gradient Domain Fusion</h1>
-        <p> Gradient domain fusion is a technique used to blend images together seamlessly. This project implements the gradient domain fusion algorithm. </p>
+        <p> Gradient domain fusion is a technique used to blend images together seamlessly. This project implements the Poisson Blending algorithm. In this algorithm, we want to maximally perserve the gradient of the source region without changing any of the background pixels because human eyes are more sensitive to the gradient than the overall intensity. The overall intensity is ignored in this implementation. </p>
+        
     </section>
 
     <section>
         <h2>Toy Problem</h2>
+        <p> 
+            The setup of solving the Poisson Blending problem is complex so we first solve a toy problem with the following objective:
+            <ul>
+                <li> minimize $(v(x+1,y)-v(x,y) - (s(x+1,y)-s(x,y)))^2$ </li>
+                <li>
+                    minimize $(v(x,y+1)-v(x,y) - (s(x,y+1)-s(x,y)))^2$
+                </li>
+                <li>minimize $(v(1,1)-s(1,1))^2$</li>
+            </ul>
+        </p>
+        <p> 
+            The least sqaure problem can be solved by constructing a matrix $A$ and a vector $b$ such that $Av = b$. The matrix $A$ is a sparse matrix that represents the constraints of the least sqaure problem. The vector $b$ is the right-hand side of the equation. The solution $v$ is the pixel values of the output image:
+            <ul>
+                <li> For x-gradient constraints:
+                    <code>
+                        A[e, im2var[y, x + 1]] = 1
+                        A[e, im2var[y, x]] = -1
+                        b[e] = img[y, x + 1] - img[y, x]
+                    </code>
+                </li>
+                <li> For y-gradient constraints:
+                    <code>
+                        A[e, im2var[y + 1, x]] = 1
+                        A[e, im2var[y, x]] = -1
+                        b[e] = img[y + 1, x] - img[y, x]
+                    </code>
+                </li>
+                <li> For source constraints:
+                    <code>
+                        A[e, im2var[0, 0]] = 1
+                        b[e] = source[0, 0]
+                    </code>
+            </ul>
+            <code>im2var</code> is a mapping from the pixel coordinates to the variable index in the output image. The variable index is used to construct the matrix $A$ and the vector $b$.
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/toy_img.png" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Source Image</figcaption>
+
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/toy_img_out.png" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Output Image</figcaption>
+            </figure>
+        </div>
+        <p> These images look identical as expected.</p>
     </section>
 
     <section>
         <h2>Poisson Blending</h2>
+        <p> 
+            For this objective, we need to solve a least sqaured problem:
+            $$\min_{v} \sum_{i\in S,\ j\in N_i\cap S} ((v_i - v_j) - (s_i - s_j))^2 + \sum_{i\in S,\ j\in N_i\cap -S} ((v_i - t_j) - (s_i - s_j))^2$$ 
+            where $v_i$ is the $i$th pixel value of the output image, $s_i$ and $t_i$ are the pixel values of the source and target images, respectively, and $N_i$ is the set of neighboring pixels of $i$. The first term in the sum is the difference between the gradients of the source image and the output image, concerning neighbors inside the source region. The second term is the difference between the gradients of the target image and the output image, concerning neighbors outside the source region. The goal is to find the pixel values $v_i$ that minimize the sum of squared differences between the gradients of the output image and the source and target images.
+        </p>
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/penguin-chick.jpeg" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Object</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/im2.JPG" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Background</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/direct_combined.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Direct placement</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/poisson_blend.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Output</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/duck.jpg" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Object</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/flamingo.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Background</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/duck_flamingo_direct_combined.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Direct placement</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/duck_flamingo_poisson_blend.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Output</figcaption>
+            </figure>
+        </div>
+
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/eagle.jpg" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Object</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/pinnacle.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Background</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/eagle_pinnacle_direct_combined.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Direct placement</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/eagle_pinnacle_poisson_blend.jpg" class="small-size
+                -image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Output</figcaption>
+            </figure>
+        </div>
+
     </section>
 
     <section>
         <h2>Mixed Gradient (Bells and Whistles)</h2>
+        <p>
+            We now switch to use mixed gradients. The mixed gradient is a combination of the gradients of the source and target images. We pick the stronger gradient between the source and target images for each pixel. The objective is updated as floows:
+
+            For this objective, we need to solve a least sqaured problem:
+            $$\min_{v} \sum_{i\in S,\ j\in N_i\cap S} ((v_i - v_j) - d_{ij})^2 + \sum_{i\in S,\ j\in N_i\cap -S} ((v_i - t_j) - d_{ij})^2$$
+            $$ d_{ij} = \begin{cases} s_i - s_j & \text{if } |s_i - s_j| > |t_i - t_j| \\ t_i - t_j & \text{otherwise} \end{cases}$$ 
+
+        </p>
+
+        <div class="image-row">
+            <figure>
+                <img src="gradient-domain-fusion/penguin-chick.jpeg" class="small-size
+                -image" alt="Overlap Mask">
+                <figcaption>Object</figcaption>
+
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/im2.JPG" class="small-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Background</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/direct_combined.jpg" class="small-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Direct combination</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/poisson_blend.jpg" class="small-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Poisson blending</figcaption>
+            </figure>
+            <figure>
+                <img src="gradient-domain-fusion/mixed_blend.jpg" class="small-size-image" alt="Sum of Squared Differences (SSD)">
+                <figcaption>Mixed blending</figcaption>
+            </figure>
+        </div>
+
+        <p>
+            If we take a closer look at the results of the mixed gradient. The result is better than the Poisson blending results when all the artifacts disappear at the edges of the original objects.
+        </p>
+<div class="image-row">
+        <figure>
+            <img src="gradient-domain-fusion/poisson_blend.jpg"  alt="Sum of Squared Differences (SSD)">
+            <figcaption>Poisson blending</figcaption>
+        </figure>
+        <figure>
+            <img src="gradient-domain-fusion/mixed_blend.jpg" alt="Sum of Squared Differences (SSD)">
+            <figcaption>Mixed blending</figcaption>
+        </figure>
+    </div>
+
+
     </section>
 </body>
